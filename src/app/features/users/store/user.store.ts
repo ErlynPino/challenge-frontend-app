@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, catchError, map, tap, throwError } from 'rxjs';
+import { Observable, catchError, finalize, map, tap, throwError } from 'rxjs';
 
 import { CreateUserDto, UpdateUserDto, User, UserRole } from '../models/user.model';
 import { UserService } from '../services/user.service';
@@ -88,6 +88,9 @@ export class UserStore {
   }
 
   createUser(dto: CreateUserDto): Observable<void> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
     return this.userService.createUser(dto).pipe(
       tap(newUser => {
         const withLocalId: User = { ...newUser, id: Date.now(), created_at: new Date().toISOString() };
@@ -95,11 +98,18 @@ export class UserStore {
         this._total.update(t => t + 1);
       }),
       map(() => undefined),
+      catchError(err => {
+        this._error.set('No se pudo crear el usuario.');
+        return throwError(() => err);
+      }),
+      finalize(() => this._isLoading.set(false)),
     );
   }
 
   updateUser(id: number, dto: UpdateUserDto): Observable<void> {
     const snapshot = this._users();
+    this._isLoading.set(true);
+    this._error.set(null);
 
     this._users.update(users =>
       users.map(u => (u.id === id ? { ...u, ...dto, updated_at: new Date().toISOString() } : u)),
@@ -109,8 +119,10 @@ export class UserStore {
       map(() => undefined),
       catchError(err => {
         this._users.set(snapshot);
+        this._error.set('No se pudo actualizar el usuario.');
         return throwError(() => err);
       }),
+      finalize(() => this._isLoading.set(false)),
     );
   }
 

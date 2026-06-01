@@ -1,1 +1,145 @@
-<p>user-form works</p>
+<div class="user-form-page">
+  <div class="user-form-page__header">
+    <p-button
+      icon="pi pi-arrow-left"
+      [text]="true"
+      severity="secondary"
+      (onClick)="goBack()"
+      aria-label="Volver"
+    />
+    <h1 class="user-form-page__title">
+      {{ isEditMode ? 'Editar usuario' : 'Nuevo usuario' }}
+    </h1>
+  </div>
+
+  @if (store.isLoading() && isEditMode && !form.get('username')?.value) {
+    <div class="user-form-page__loading" role="status" aria-label="Cargando usuario">
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+      <span>Cargando...</span>
+    </div>
+  } @else {
+    <div class="user-form-page__card">
+      @if (store.error()) {
+        <p-message severity="error" [text]="store.error()!" styleClass="user-form-page__api-error" />
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="user-form-page__grid">
+
+          <div class="user-form-page__field">
+            <label for="username">Nombre de usuario *</label>
+            <input
+              pInputText
+              id="username"
+              formControlName="username"
+              placeholder="ej: jdoe"
+              [attr.aria-invalid]="form.get('username')?.invalid && form.get('username')?.touched"
+              aria-describedby="username-error"
+            />
+            @if (fieldError('username')) {
+              <small id="username-error" class="user-form-page__field-error" role="alert">
+                {{ fieldError('username') }}
+              </small>
+            }
+          </div>
+
+          <div class="user-form-page__field">
+            <label for="email">Email *</label>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="ej: jdoe@example.com"
+              [attr.aria-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+              aria-describedby="email-error"
+            />
+            @if (fieldError('email')) {
+              <small id="email-error" class="user-form-page__field-error" role="alert">
+                {{ fieldError('email') }}
+              </small>
+            }
+          </div>
+
+          <div class="user-form-page__field">
+            <label for="first_name">Nombre *</label>
+            <input
+              pInputText
+              id="first_name"
+              formControlName="first_name"
+              placeholder="ej: John"
+              [attr.aria-invalid]="form.get('first_name')?.invalid && form.get('first_name')?.touched"
+              aria-describedby="first_name-error"
+            />
+            @if (fieldError('first_name')) {
+              <small id="first_name-error" class="user-form-page__field-error" role="alert">
+                {{ fieldError('first_name') }}
+              </small>
+            }
+          </div>
+
+          <div class="user-form-page__field">
+            <label for="last_name">Apellido *</label>
+            <input
+              pInputText
+              id="last_name"
+              formControlName="last_name"
+              placeholder="ej: Doe"
+              [attr.aria-invalid]="form.get('last_name')?.invalid && form.get('last_name')?.touched"
+              aria-describedby="last_name-error"
+            />
+            @if (fieldError('last_name')) {
+              <small id="last_name-error" class="user-form-page__field-error" role="alert">
+                {{ fieldError('last_name') }}
+              </small>
+            }
+          </div>
+
+          <div class="user-form-page__field">
+            <label for="role">Rol *</label>
+            <p-select
+              inputId="role"
+              formControlName="role"
+              [options]="roleOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecciona un rol"
+              styleClass="w-full"
+              [attr.aria-invalid]="form.get('role')?.invalid && form.get('role')?.touched"
+              aria-describedby="role-error"
+            />
+            @if (fieldError('role')) {
+              <small id="role-error" class="user-form-page__field-error" role="alert">
+                {{ fieldError('role') }}
+              </small>
+            }
+          </div>
+
+          <div class="user-form-page__field user-form-page__field--toggle">
+            <label for="active">Estado</label>
+            <div class="user-form-page__toggle-row">
+              <p-toggleswitch inputId="active" formControlName="active" />
+              <span>{{ form.get('active')?.value ? 'Activo' : 'Inactivo' }}</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="user-form-page__actions">
+          <p-button
+            type="button"
+            label="Cancelar"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="goBack()"
+          />
+          <p-button
+            type="submit"
+            [label]="isEditMode ? 'Guardar cambios' : 'Crear usuario'"
+            [loading]="store.isLoading()"
+          />
+        </div>
+      </form>
+    </div>
+  }
+</div>
