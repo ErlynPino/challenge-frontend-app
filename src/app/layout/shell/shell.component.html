@@ -1,0 +1,27 @@
+<div class="app-layout">
+  <header class="app-header" role="banner">
+    <nav class="app-nav" aria-label="Navegación principal">
+      <a class="app-nav__brand" routerLink="/">User Manager</a>
+      <ul class="app-nav__links" role="list">
+        <li>
+          <a
+            routerLink="/users"
+            routerLinkActive="app-nav__link--active"
+            class="app-nav__link"
+            aria-label="Ir a gestión de usuarios"
+          >
+            Usuarios
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="app-main" id="main-content" tabindex="-1">
+    <router-outlet />
+  </main>
+
+  <footer class="app-footer" role="contentinfo">
+    <p>User Management &copy; 2026</p>
+  </footer>
+</div>
