@@ -19,6 +19,16 @@
           </a>
         </li>
       </ul>
+
+      <button
+        class="app-nav__theme-toggle"
+        (click)="theme.toggle()"
+        [attr.aria-label]="theme.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
+        [attr.aria-pressed]="theme.isDark()"
+        title="Cambiar tema"
+      >
+        <i [class]="theme.isDark() ? 'pi pi-sun' : 'pi pi-moon'" aria-hidden="true"></i>
+      </button>
     </nav>
   </header>
 
