@@ -10,22 +10,22 @@
 
   &__title {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     margin: 0;
-    color: #111827;
+    color: var(--color-text);
   }
 
   &__filters {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
     flex-wrap: wrap;
     align-items: center;
   }
 
   &__search {
     flex: 1;
-    min-width: 220px;
+    min-width: 200px;
 
     input {
       width: 100%;
@@ -39,32 +39,26 @@
     padding: 1rem 1.25rem;
     background: #fef2f2;
     border: 1px solid #fecaca;
-    border-radius: 6px;
+    border-radius: 8px;
     margin-bottom: 1.25rem;
-    color: #dc2626;
+    color: var(--color-danger);
 
-    i {
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    p {
-      flex: 1;
-      margin: 0;
-    }
+    i { font-size: 1.25rem; flex-shrink: 0; }
+    p { flex: 1; margin: 0; }
   }
 
   &__row {
     cursor: pointer;
+    transition: background-color 0.1s;
 
     &:focus-visible {
-      outline: 2px solid #6366f1;
+      outline: 2px solid var(--color-primary);
       outline-offset: -2px;
     }
   }
 
   &__actions-col {
-    width: 72px;
+    width: 60px;
     text-align: center;
   }
 
@@ -74,29 +68,26 @@
     align-items: center;
     gap: 1rem;
     padding: 3rem 1rem;
-    color: #6b7280;
+    color: var(--color-text-muted);
 
-    i {
-      font-size: 3rem;
-      opacity: 0.4;
-    }
+    i { font-size: 3rem; opacity: 0.35; }
+    p { margin: 0; }
+  }
+}
 
-    p {
-      margin: 0;
-      font-size: 1rem;
-    }
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  .user-list__filters {
+    p-select { min-width: 140px; }
   }
 }
 
 @media (max-width: 768px) {
   .user-list {
-    &__filters {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    &__search {
-      min-width: unset;
-    }
+    &__header { flex-direction: column; align-items: flex-start; }
+    &__title { font-size: 1.25rem; }
+    &__filters { flex-direction: column; align-items: stretch; }
+    &__search { min-width: unset; }
   }
 }
+

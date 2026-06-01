@@ -63,17 +63,17 @@
     (onLazyLoad)="onLazyLoad($event)"
     [rowHover]="true"
     dataKey="id"
-    Class="p-datatable-sm"
+    styleClass="p-datatable-sm p-datatable-striped"
     aria-label="Tabla de usuarios"
   >
     <ng-template pTemplate="header">
       <tr>
         <th scope="col">Usuario</th>
-        <th scope="col">Email</th>
-        <th scope="col">Nombre completo</th>
+        <th scope="col" class="col-hide-mobile">Email</th>
+        <th scope="col" class="col-hide-tablet">Nombre completo</th>
         <th scope="col">Rol</th>
         <th scope="col">Estado</th>
-        <th scope="col">Creado</th>
+        <th scope="col" class="col-hide-tablet">Creado</th>
         <th scope="col" class="user-list__actions-col">Acciones</th>
       </tr>
     </ng-template>
@@ -87,8 +87,8 @@
         [attr.aria-label]="'Ver detalle de ' + user.username"
       >
         <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td class="col-hide-mobile">{{ user.email }}</td>
+        <td class="col-hide-tablet">{{ user.first_name }} {{ user.last_name }}</td>
         <td>
           <p-tag [value]="user.role" [severity]="roleSeverity(user.role)" />
         </td>
@@ -98,7 +98,7 @@
             [severity]="user.active ? 'success' : 'danger'"
           />
         </td>
-        <td>{{ user.created_at | date: 'dd/MM/yyyy' }}</td>
+        <td class="col-hide-tablet">{{ user.created_at | date: 'dd/MM/yyyy' }}</td>
         <td class="user-list__actions-col">
           <p-button
             icon="pi pi-pencil"
