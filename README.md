@@ -1,59 +1,151 @@
-# ChallengeFrontendApp
+﻿# Challenge Frontend App — User Management SPA
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+A full-featured CRUD Single Page Application built as a frontend engineering challenge.
+Stack: **Angular 21 · PrimeNG 21 · Tailwind CSS 4 · Vitest 4**.
 
-## Development server
+---
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+- **User list** with server-side pagination, debounced search, and role/status filters
+- **User detail** view with structured data display and avatar initials
+- **Create / Edit** form with reactive validation (custom validators, aria attributes)
+- **Delete** with optimistic UI update and rollback on error
+- **Toast notifications** (PrimeNG) for success/error feedback
+- **Confirm dialog** before destructive actions
+- **WCAG 2.1 AA** accessible: skip link, `aria-busy`, `aria-live`, keyboard nav, focus-visible
+- **Responsive** layout — columns hidden progressively on tablet/mobile
+- **30 unit tests** across services, store, validators and components
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Tech Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Layer | Technology | Version |
+|---|---|---|
+| Framework | Angular (standalone components) | 21 |
+| UI library | PrimeNG + Aura theme | 21 |
+| Styling | Tailwind CSS 4 (Vite plugin) | 4.3 |
+| State | Angular Signals Store (service-based) | — |
+| HTTP | Angular HttpClient + functional interceptor | — |
+| Testing | Vitest + @angular/build:unit-test | 4 |
+| API | DummyJSON (public REST mock) | — |
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Prerequisites
 
-```bash
-ng generate --help
-```
+- **Node.js** >= 20.x
+- **npm** >= 10.x
+- **Angular CLI** 21 (`npm i -g @angular/cli@21`)
 
-## Building
+---
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Getting Started
 
 ```bash
-ng e2e
+# 1. Clone
+git clone https://github.com/ErlynPino/challenge-frontend-app.git
+cd challenge-frontend-app
+
+# 2. Install dependencies
+npm install
+
+# 3. Start dev server
+npm start
+# App available at http://localhost:4200
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## Available Scripts
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+| Command | Description |
+|---|---|
+| `npm start` | Start dev server (`ng serve`) with live reload |
+| `npm run build` | Production build — output in `dist/` |
+| `npm test` | Run all unit tests once (no watch) |
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── app.config.ts          # Bootstrap providers
+│   ├── app.routes.ts          # Root routing
+│   ├── core/
+│   │   ├── interceptors/      # apiInterceptor — prepends base URL, logs errors
+│   │   └── services/          # LoggerService (silenced in production)
+│   ├── environment/           # ENVIRONMENT InjectionToken + values
+│   ├── layout/shell/          # App shell: header + skip-link + toast + confirm dialog
+│   └── features/users/
+│       ├── models/            # User, DTO, DummyJSON types + mapper function
+│       ├── services/          # UserService (HTTP CRUD)
+│       ├── store/             # UserStore (Signals — state, computed, actions)
+│       └── pages/
+│           ├── user-list/     # Table, pagination, search, filters
+│           ├── user-detail/   # Read-only detail card
+│           └── user-form/     # Reactive form — create & edit
+├── styles.scss                # Tailwind layers, CSS custom properties, WCAG utilities
+└── index.html
+```
+
+---
+
+## API Choice — DummyJSON
+
+[DummyJSON](https://dummyjson.com/docs/users) was chosen because:
+
+1. **No auth** — zero setup, focus stays on frontend architecture
+2. **Full CRUD surface** — GET list, GET by id, POST, PUT, DELETE all available
+3. **Pagination built-in** — `?limit=N&skip=N` mirrors real-world APIs
+4. **Search endpoint** — `/users/search?q=` enables server-side search
+5. **Simulated writes** — POST/PUT/DELETE return realistic responses even though data is not persisted
+
+> Field mapping: `firstName → first_name`, `lastName → last_name`.
+> `created_at` is derived from `id` (simulated date). `active` defaults to `true`.
+
+---
+
+## Architecture Decisions
+
+### Signals Store (no NgRx)
+A service-based Signals store was chosen over NgRx to keep boilerplate minimal while still delivering reactive, computed state without change-detection pressure.
+
+### Optimistic Updates
+`deleteUser` and `updateUser` mutate local state immediately and roll back on API error — the user sees instant feedback with no spinner latency.
+
+### Functional Interceptor
+A single `apiInterceptor` centralises base-URL prepending and error logging, keeping services clean of environment imports.
+
+### Standalone Components + Lazy Routes
+Every feature chunk is lazy-loaded via `loadComponent` / `loadChildren`, giving fast initial load with code-split bundles.
+
+---
+
+## Running Tests
+
+```bash
+npm test
+```
+
+Output should show **8 test suites · 30 tests · 0 failures**.
+
+| Suite | Tests |
+|---|---|
+| LoggerService | 5 |
+| UserService (HTTP) | 6 |
+| UserStore (Signals) | 6 |
+| Form validators | 5 |
+| DummyJSON mapper | 2 |
+| ShellComponent | 2 |
+| UserListComponent | 1 |
+| UserDetailComponent | 1 |
+
+---
+
+## License
+
+MIT
