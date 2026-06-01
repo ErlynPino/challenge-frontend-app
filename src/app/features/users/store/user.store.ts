@@ -10,6 +10,8 @@ export class UserStore {
 
   // ── Private state ──────────────────────────────────────────────────────────
   private readonly _users = signal<User[]>([]);
+  /** Users created in this session — not persisted on DummyJSON, never overwritten by loadUsers(). */
+  private readonly _localUsers = signal<User[]>([]);
   private readonly _selectedUser = signal<User | null>(null);
   private readonly _isLoading = signal(false);
   private readonly _error = signal<string | null>(null);
@@ -33,19 +35,27 @@ export class UserStore {
 
   // ── Derived state ──────────────────────────────────────────────────────────
   readonly users = computed(() => {
-    let list = this._users();
-    const active = this._activeFilter();
     const role = this._roleFilter();
+    const active = this._activeFilter();
     const search = this._search();
-    // Role is filtered server-side when not searching.
-    // When search is active (DummyJSON can't combine search + role filter),
-    // we apply role filtering client-side on the current page results.
-    if (role !== null && search) list = list.filter((u) => u.role === role);
-    if (active !== null) list = list.filter((u) => u.active === active);
-    return list;
+
+    // Local (session) users: always filter client-side.
+    let localList = this._localUsers();
+    if (role !== null) localList = localList.filter((u) => u.role === role);
+    if (active !== null) localList = localList.filter((u) => u.active === active);
+
+    // Server users: role is filtered server-side unless search is active
+    // (DummyJSON can't combine /filter + /search).
+    let serverList = this._users();
+    if (role !== null && search) serverList = serverList.filter((u) => u.role === role);
+    if (active !== null) serverList = serverList.filter((u) => u.active === active);
+
+    return [...localList, ...serverList];
   });
 
-  readonly totalPages = computed(() => Math.ceil(this._total() / this._pageSize()));
+  readonly totalPages = computed(() =>
+    Math.ceil((this._total() + this._localUsers().length) / this._pageSize()),
+  );
   readonly isEmpty = computed(() => !this._isLoading() && this.users().length === 0);
 
   // ── Actions ────────────────────────────────────────────────────────────────
@@ -110,8 +120,8 @@ export class UserStore {
           id: Date.now(),
           created_at: new Date().toISOString(),
         };
-        this._users.update((users) => [withLocalId, ...users]);
-        this._total.update((t) => t + 1);
+        // Store in _localUsers so loadUsers() (triggered on navigate back) doesn't erase it.
+        this._localUsers.update((local) => [withLocalId, ...local]);
       }),
       map(() => undefined),
       catchError((err) => {
@@ -143,18 +153,26 @@ export class UserStore {
   }
 
   deleteUser(id: number): Observable<void> {
-    const snapshot = this._users();
+    const snapshotServer = this._users();
+    const snapshotLocal = this._localUsers();
     this._isLoading.set(true);
     this._error.set(null);
 
-    this._users.update((users) => users.filter((u) => u.id !== id));
-    this._total.update((t) => t - 1);
+    // Remove from whichever list contains this id.
+    const isLocal = this._localUsers().some((u) => u.id === id);
+    if (isLocal) {
+      this._localUsers.update((local) => local.filter((u) => u.id !== id));
+    } else {
+      this._users.update((users) => users.filter((u) => u.id !== id));
+      this._total.update((t) => t - 1);
+    }
 
     return this.userService.deleteUser(id).pipe(
       map(() => undefined),
       catchError((err) => {
-        this._users.set(snapshot);
-        this._total.update((t) => t + 1);
+        this._users.set(snapshotServer);
+        this._localUsers.set(snapshotLocal);
+        if (!isLocal) this._total.update((t) => t + 1);
         this._error.set('No se pudo eliminar el usuario.');
         return throwError(() => err);
       }),
