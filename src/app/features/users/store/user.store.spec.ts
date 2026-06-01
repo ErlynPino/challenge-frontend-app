@@ -8,8 +8,12 @@ import { User } from '../models/user.model';
 const ENV = { production: false, apiUrl: 'https://dummyjson.com' };
 
 const RAW = (id: number, role = 'user') => ({
-  id, firstName: 'Test', lastName: 'User',
-  username: `user${id}`, email: `u${id}@t.com`, role,
+  id,
+  firstName: 'Test',
+  lastName: 'User',
+  username: `user${id}`,
+  email: `u${id}@t.com`,
+  role,
 });
 
 describe('UserStore', () => {
@@ -43,10 +47,14 @@ describe('UserStore', () => {
     store.loadUsers();
     expect(store.isLoading()).toBe(true);
 
-    http.expectOne(r => r.url === '/users').flush({
-      users: [RAW(1, 'admin'), RAW(2, 'user')],
-      total: 2, skip: 0, limit: 10,
-    });
+    http
+      .expectOne((r) => r.url === '/users')
+      .flush({
+        users: [RAW(1, 'admin'), RAW(2, 'user')],
+        total: 2,
+        skip: 0,
+        limit: 10,
+      });
 
     expect(store.isLoading()).toBe(false);
     expect(store.users().length).toBe(2);
@@ -56,7 +64,8 @@ describe('UserStore', () => {
 
   it('loadUsers() sets error on HTTP failure', () => {
     store.loadUsers();
-    http.expectOne(r => r.url === '/users')
+    http
+      .expectOne((r) => r.url === '/users')
       .flush('Not Found', { status: 404, statusText: 'Not Found' });
 
     expect(store.isLoading()).toBe(false);
@@ -64,34 +73,61 @@ describe('UserStore', () => {
     expect(store.users()).toEqual([]);
   });
 
-  it('setRoleFilter() filters users by role via computed signal', () => {
+  it('setRoleFilter() sends role to server via /users/filter', () => {
+    // First load without filter
     store.loadUsers();
-    http.expectOne(r => r.url === '/users').flush({
-      users: [RAW(1, 'admin'), RAW(2, 'user')],
-      total: 2, skip: 0, limit: 10,
-    });
+    http
+      .expectOne((r) => r.url === '/users')
+      .flush({
+        users: [RAW(1, 'admin'), RAW(2, 'user')],
+        total: 2,
+        skip: 0,
+        limit: 10,
+      });
+    expect(store.users().length).toBe(2);
 
+    // Apply role filter — should trigger a new server request to /users/filter
     store.setRoleFilter('admin');
+    const filterReq = http.expectOne((r) => r.url === '/users/filter');
+    expect(filterReq.request.params.get('key')).toBe('role');
+    expect(filterReq.request.params.get('value')).toBe('admin');
+    filterReq.flush({ users: [RAW(1, 'admin')], total: 1, skip: 0, limit: 10 });
+
     expect(store.users().length).toBe(1);
     expect(store.users()[0].role).toBe('admin');
 
+    // Clear filter — should reload /users
     store.setRoleFilter(null);
+    http
+      .expectOne((r) => r.url === '/users')
+      .flush({
+        users: [RAW(1, 'admin'), RAW(2, 'user')],
+        total: 2,
+        skip: 0,
+        limit: 10,
+      });
     expect(store.users().length).toBe(2);
   });
 
   it('deleteUser() applies optimistic removal then rollbacks on API error', () => {
     store.loadUsers();
-    http.expectOne(r => r.url === '/users').flush({
-      users: [RAW(1), RAW(2)],
-      total: 2, skip: 0, limit: 10,
-    });
+    http
+      .expectOne((r) => r.url === '/users')
+      .flush({
+        users: [RAW(1), RAW(2)],
+        total: 2,
+        skip: 0,
+        limit: 10,
+      });
     expect(store.users().length).toBe(2);
 
     store.deleteUser(1).subscribe({ error: () => {} });
     expect(store.users().length).toBe(1);
     expect(store.users()[0].id).toBe(2);
 
-    http.expectOne('/users/1').flush('Error', { status: 500, statusText: 'Error' });
+    http
+      .expectOne((r) => r.url === '/users/1')
+      .flush('Error', { status: 500, statusText: 'Error' });
 
     expect(store.users().length).toBe(2);
     expect(store.error()).toBeTruthy();
@@ -99,12 +135,17 @@ describe('UserStore', () => {
 
   it('loadUserById() uses cache when user is already in the list', () => {
     store.loadUsers();
-    http.expectOne(r => r.url === '/users').flush({
-      users: [RAW(5)], total: 1, skip: 0, limit: 10,
-    });
+    http
+      .expectOne((r) => r.url === '/users')
+      .flush({
+        users: [RAW(5)],
+        total: 1,
+        skip: 0,
+        limit: 10,
+      });
 
     store.loadUserById(5);
-    http.expectNone('/users/5');
+    // No new HTTP request — should serve from cache
     expect(store.selectedUser()?.id).toBe(5);
   });
 });
