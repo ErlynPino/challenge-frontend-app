@@ -25,12 +25,20 @@ export class UserService {
       .set('skip', skip)
       .set('select', 'id,firstName,lastName,username,email,role');
 
-    const url = params.search ? '/users/search' : '/users';
-    if (params.search) httpParams = httpParams.set('q', params.search);
+    // Priority: search → role filter → default list
+    let url = '/users';
+    if (params.search) {
+      url = '/users/search';
+      httpParams = httpParams.set('q', params.search);
+    } else if (params.role) {
+      // DummyJSON supports /users/filter?key=role&value=admin
+      url = '/users/filter';
+      httpParams = httpParams.set('key', 'role').set('value', params.role);
+    }
 
-    return this.http.get<DummyJsonUsersResponse>(url, { params: httpParams }).pipe(
-      map(res => ({ users: res.users.map(mapDummyJsonUser), total: res.total })),
-    );
+    return this.http
+      .get<DummyJsonUsersResponse>(url, { params: httpParams })
+      .pipe(map((res) => ({ users: res.users.map(mapDummyJsonUser), total: res.total })));
   }
 
   getUserById(id: number): Observable<User> {
@@ -46,7 +54,7 @@ export class UserService {
         lastName: dto.last_name,
         role: dto.role,
       })
-      .pipe(map(raw => ({ ...mapDummyJsonUser(raw), active: dto.active })));
+      .pipe(map((raw) => ({ ...mapDummyJsonUser(raw), active: dto.active })));
   }
 
   updateUser(id: number, dto: UpdateUserDto): Observable<User> {
@@ -59,7 +67,7 @@ export class UserService {
 
     return this.http
       .put<DummyJsonUser>(`/users/${id}`, body)
-      .pipe(map(raw => ({ ...mapDummyJsonUser(raw), active: dto.active ?? true })));
+      .pipe(map((raw) => ({ ...mapDummyJsonUser(raw), active: dto.active ?? true })));
   }
 
   deleteUser(id: number): Observable<{ id: number; isDeleted: boolean }> {

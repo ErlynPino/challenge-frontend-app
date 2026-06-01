@@ -34,10 +34,14 @@ export class UserStore {
   // ── Derived state ──────────────────────────────────────────────────────────
   readonly users = computed(() => {
     let list = this._users();
-    const role = this._roleFilter();
     const active = this._activeFilter();
-    if (role !== null) list = list.filter(u => u.role === role);
-    if (active !== null) list = list.filter(u => u.active === active);
+    const role = this._roleFilter();
+    const search = this._search();
+    // Role is filtered server-side when not searching.
+    // When search is active (DummyJSON can't combine search + role filter),
+    // we apply role filtering client-side on the current page results.
+    if (role !== null && search) list = list.filter((u) => u.role === role);
+    if (active !== null) list = list.filter((u) => u.active === active);
     return list;
   });
 
@@ -50,8 +54,16 @@ export class UserStore {
     this._isLoading.set(true);
     this._error.set(null);
 
+    // Pass role to server only when not searching (DummyJSON limitation: /users/filter
+    // and /users/search cannot be combined in a single request).
+    const search = this._search() || undefined;
     this.userService
-      .getUsers({ page: this._page(), pageSize: this._pageSize(), search: this._search() || undefined })
+      .getUsers({
+        page: this._page(),
+        pageSize: this._pageSize(),
+        search,
+        role: !search ? (this._roleFilter() ?? undefined) : undefined,
+      })
       .subscribe({
         next: ({ users, total }) => {
           this._users.set(users);
@@ -66,7 +78,7 @@ export class UserStore {
   }
 
   loadUserById(id: number): void {
-    const cached = this._users().find(u => u.id === id);
+    const cached = this._users().find((u) => u.id === id);
     if (cached) {
       this._selectedUser.set(cached);
       return;
@@ -76,7 +88,7 @@ export class UserStore {
     this._error.set(null);
 
     this.userService.getUserById(id).subscribe({
-      next: user => {
+      next: (user) => {
         this._selectedUser.set(user);
         this._isLoading.set(false);
       },
@@ -92,13 +104,17 @@ export class UserStore {
     this._error.set(null);
 
     return this.userService.createUser(dto).pipe(
-      tap(newUser => {
-        const withLocalId: User = { ...newUser, id: Date.now(), created_at: new Date().toISOString() };
-        this._users.update(users => [withLocalId, ...users]);
-        this._total.update(t => t + 1);
+      tap((newUser) => {
+        const withLocalId: User = {
+          ...newUser,
+          id: Date.now(),
+          created_at: new Date().toISOString(),
+        };
+        this._users.update((users) => [withLocalId, ...users]);
+        this._total.update((t) => t + 1);
       }),
       map(() => undefined),
-      catchError(err => {
+      catchError((err) => {
         this._error.set('No se pudo crear el usuario.');
         return throwError(() => err);
       }),
@@ -111,13 +127,13 @@ export class UserStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this._users.update(users =>
-      users.map(u => (u.id === id ? { ...u, ...dto, updated_at: new Date().toISOString() } : u)),
+    this._users.update((users) =>
+      users.map((u) => (u.id === id ? { ...u, ...dto, updated_at: new Date().toISOString() } : u)),
     );
 
     return this.userService.updateUser(id, dto).pipe(
       map(() => undefined),
-      catchError(err => {
+      catchError((err) => {
         this._users.set(snapshot);
         this._error.set('No se pudo actualizar el usuario.');
         return throwError(() => err);
@@ -131,14 +147,14 @@ export class UserStore {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this._users.update(users => users.filter(u => u.id !== id));
-    this._total.update(t => t - 1);
+    this._users.update((users) => users.filter((u) => u.id !== id));
+    this._total.update((t) => t - 1);
 
     return this.userService.deleteUser(id).pipe(
       map(() => undefined),
-      catchError(err => {
+      catchError((err) => {
         this._users.set(snapshot);
-        this._total.update(t => t + 1);
+        this._total.update((t) => t + 1);
         this._error.set('No se pudo eliminar el usuario.');
         return throwError(() => err);
       }),
@@ -159,6 +175,8 @@ export class UserStore {
 
   setRoleFilter(role: UserRole | null): void {
     this._roleFilter.set(role);
+    this._page.set(1);
+    this.loadUsers();
   }
 
   setActiveFilter(active: boolean | null): void {

@@ -27,6 +27,7 @@ export interface UserListParams {
   page: number;
   pageSize: number;
   search?: string;
+  role?: UserRole;
 }
 
 export interface UserListResponse {
