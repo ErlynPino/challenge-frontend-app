@@ -63,18 +63,19 @@
     (onLazyLoad)="onLazyLoad($event)"
     [rowHover]="true"
     dataKey="id"
-    styleClass="p-datatable-sm p-datatable-striped"
-    aria-label="Tabla de usuarios"
+    styleClass="p-datatable-sm"
+    [attr.aria-busy]="store.isLoading()"
+    aria-label="Listado de usuarios"
   >
     <ng-template pTemplate="header">
       <tr>
-        <th scope="col">Usuario</th>
-        <th scope="col" class="col-hide-mobile">Email</th>
-        <th scope="col" class="col-hide-tablet">Nombre completo</th>
-        <th scope="col">Rol</th>
-        <th scope="col">Estado</th>
-        <th scope="col" class="col-hide-tablet">Creado</th>
-        <th scope="col" class="user-list__actions-col">Acciones</th>
+        <th scope="col" abbr="Usuario">Usuario</th>
+        <th scope="col" abbr="Email" class="col-hide-mobile">Email</th>
+        <th scope="col" abbr="Nombre" class="col-hide-tablet">Nombre completo</th>
+        <th scope="col" abbr="Rol">Rol</th>
+        <th scope="col" abbr="Estado">Estado</th>
+        <th scope="col" abbr="Creado" class="col-hide-tablet">Creado</th>
+        <th scope="col" class="user-list__actions-col"><span class="sr-only">Acciones</span></th>
       </tr>
     </ng-template>
 
@@ -83,7 +84,9 @@
         class="user-list__row"
         (click)="navigateToDetail(user.id)"
         (keydown.enter)="navigateToDetail(user.id)"
+        (keydown.space)="navigateToDetail(user.id)"
         tabindex="0"
+        role="row"
         [attr.aria-label]="'Ver detalle de ' + user.username"
       >
         <td>{{ user.username }}</td>

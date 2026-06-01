@@ -58,8 +58,9 @@
   }
 
   &__actions-col {
-    width: 60px;
-    text-align: center;
+    width: 80px;
+    text-align: right;
+    white-space: nowrap;
   }
 
   &__empty {

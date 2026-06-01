@@ -33,6 +33,7 @@
               id="username"
               formControlName="username"
               placeholder="ej: jdoe"
+              aria-required="true"
               [attr.aria-invalid]="form.get('username')?.invalid && form.get('username')?.touched"
               aria-describedby="username-error"
             />
@@ -51,6 +52,7 @@
               type="email"
               formControlName="email"
               placeholder="ej: jdoe@example.com"
+              aria-required="true"
               [attr.aria-invalid]="form.get('email')?.invalid && form.get('email')?.touched"
               aria-describedby="email-error"
             />
@@ -68,6 +70,7 @@
               id="first_name"
               formControlName="first_name"
               placeholder="ej: John"
+              aria-required="true"
               [attr.aria-invalid]="form.get('first_name')?.invalid && form.get('first_name')?.touched"
               aria-describedby="first_name-error"
             />
@@ -85,6 +88,7 @@
               id="last_name"
               formControlName="last_name"
               placeholder="ej: Doe"
+              aria-required="true"
               [attr.aria-invalid]="form.get('last_name')?.invalid && form.get('last_name')?.touched"
               aria-describedby="last_name-error"
             />

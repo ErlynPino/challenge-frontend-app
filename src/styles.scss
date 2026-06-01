@@ -6,6 +6,17 @@
   box-sizing: border-box;
 }
 
+/* Focus visible global — WCAG 2.1 AA */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 :root {
   --color-primary: #4f46e5;
   --color-primary-dark: #4338ca;
@@ -37,9 +48,61 @@ ul {
   padding: 0;
 }
 
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Tabla responsive en móvil */
 .p-datatable-wrapper {
   overflow-x: auto;
+}
+
+/* Tabla compacta — override PrimeNG Aura */
+.p-datatable {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+
+  .p-datatable-thead > tr > th {
+    background: #f8f9fb;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .p-datatable-tbody > tr > td {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+  }
+
+  .p-datatable-tbody > tr:last-child > td {
+    border-bottom: none;
+  }
+
+  .p-datatable-tbody > tr:hover {
+    background: var(--color-primary-light) !important;
+  }
+
+  .p-paginator {
+    border-top: 1px solid var(--color-border);
+    padding: 0.5rem 1rem;
+  }
 }
 
 /* Ocultar columnas secundarias en móvil */
