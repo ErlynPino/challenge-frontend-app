@@ -9,10 +9,11 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { UserStore } from '../../store/user.store';
 import { UserRole } from '../../models/user.model';
+import { TranslatePipe } from '../../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-user-detail',
-  imports: [DatePipe, ButtonModule, TagModule, SkeletonModule],
+  imports: [DatePipe, ButtonModule, TagModule, SkeletonModule, TranslatePipe],
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss',
 })

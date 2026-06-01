@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
@@ -16,6 +16,8 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { UserStore } from '../../store/user.store';
 import { UserRole } from '../../models/user.model';
+import { I18nService } from '../../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-user-list',
@@ -30,6 +32,7 @@ import { UserRole } from '../../models/user.model';
     SkeletonModule,
     IconField,
     InputIcon,
+    TranslatePipe,
   ],
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
@@ -40,6 +43,7 @@ export class UserListComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly toast = inject(MessageService);
   private readonly confirm = inject(ConfirmationService);
+  private readonly i18n = inject(I18nService);
   private readonly searchInput$ = new Subject<string>();
 
   protected searchValue = '';
@@ -47,18 +51,18 @@ export class UserListComponent implements OnInit {
   protected selectedActive: boolean | null = null;
   protected readonly skeletonRows = [1, 2, 3, 4, 5];
 
-  protected readonly roleOptions = [
-    { label: 'Todos los roles', value: null },
-    { label: 'Admin', value: 'admin' as UserRole },
-    { label: 'Usuario', value: 'user' as UserRole },
-    { label: 'Invitado', value: 'guest' as UserRole },
-  ];
+  protected readonly roleOptions = computed(() => [
+    { label: this.i18n.t('common.all-roles'), value: null },
+    { label: this.i18n.t('common.admin'), value: 'admin' as UserRole },
+    { label: this.i18n.t('common.user'), value: 'user' as UserRole },
+    { label: this.i18n.t('common.guest'), value: 'guest' as UserRole },
+  ]);
 
-  protected readonly activeOptions = [
-    { label: 'Todos', value: null },
-    { label: 'Activos', value: true },
-    { label: 'Inactivos', value: false },
-  ];
+  protected readonly activeOptions = computed(() => [
+    { label: this.i18n.t('common.all'), value: null },
+    { label: this.i18n.t('common.active'), value: true },
+    { label: this.i18n.t('common.inactive'), value: false },
+  ]);
 
   ngOnInit(): void {
     this.searchInput$

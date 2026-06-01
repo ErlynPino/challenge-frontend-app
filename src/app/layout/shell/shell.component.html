@@ -13,19 +13,28 @@
             routerLink="/users"
             routerLinkActive="app-nav__link--active"
             class="app-nav__link"
-            aria-label="Ir a gestión de usuarios"
+            [attr.aria-label]="'nav.users' | translate"
           >
-            Usuarios
+            {{ 'nav.users' | translate }}
           </a>
         </li>
       </ul>
 
       <button
         class="app-nav__theme-toggle"
+        (click)="i18n.toggle()"
+        [attr.aria-label]="'lang.switch-label' | translate"
+        title="{{ 'lang.switch-label' | translate }}"
+      >
+        {{ 'lang.current' | translate }}
+      </button>
+
+      <button
+        class="app-nav__theme-toggle"
         (click)="theme.toggle()"
-        [attr.aria-label]="theme.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"
+        [attr.aria-label]="theme.isDark() ? ('nav.theme-light' | translate) : ('nav.theme-dark' | translate)"
         [attr.aria-pressed]="theme.isDark()"
-        title="Cambiar tema"
+        title="{{ theme.isDark() ? ('nav.theme-light' | translate) : ('nav.theme-dark' | translate) }}"
       >
         <i [class]="theme.isDark() ? 'pi pi-sun' : 'pi pi-moon'" aria-hidden="true"></i>
       </button>
@@ -37,6 +46,6 @@
   </main>
 
   <footer class="app-footer" role="contentinfo">
-    <p>User Management &copy; 2026</p>
+    <p>{{ 'footer.copyright' | translate }}</p>
   </footer>
 </div>

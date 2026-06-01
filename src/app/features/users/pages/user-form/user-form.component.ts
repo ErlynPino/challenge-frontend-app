@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, OnInit, computed, inject, input } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -17,6 +17,8 @@ import { MessageModule } from 'primeng/message';
 import { MessageService } from 'primeng/api';
 import { UserStore } from '../../store/user.store';
 import { UserRole } from '../../models/user.model';
+import { I18nService } from '../../../../core/i18n/i18n.service';
+import { TranslatePipe } from '../../../../core/i18n/translate.pipe';
 
 function noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
   return control.value && /\s/.test(control.value) ? { noWhitespace: true } : null;
@@ -37,6 +39,7 @@ function roleValidator(validRoles: UserRole[]) {
     SelectModule,
     ToggleSwitchModule,
     MessageModule,
+    TranslatePipe,
   ],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
@@ -48,13 +51,14 @@ export class UserFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly toast = inject(MessageService);
   protected readonly store = inject(UserStore);
+  private readonly i18n = inject(I18nService);
 
   protected readonly VALID_ROLES: UserRole[] = ['admin', 'user', 'guest'];
-  protected readonly roleOptions = [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Usuario', value: 'user' },
-    { label: 'Invitado', value: 'guest' },
-  ];
+  protected readonly roleOptions = computed(() => [
+    { label: this.i18n.t('common.admin'), value: 'admin' },
+    { label: this.i18n.t('common.user'), value: 'user' },
+    { label: this.i18n.t('common.guest'), value: 'guest' },
+  ]);
 
   protected form!: FormGroup;
 

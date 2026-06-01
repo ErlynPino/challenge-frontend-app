@@ -8,7 +8,7 @@
       aria-label="Volver"
     />
     <h1 class="user-form-page__title">
-      {{ isEditMode ? 'Editar usuario' : 'Nuevo usuario' }}
+      {{ isEditMode ? ('user-form.title-edit' | translate) : ('user-form.title-create' | translate) }}
     </h1>
   </div>
 
@@ -27,7 +27,7 @@
         <div class="user-form-page__grid">
 
           <div class="user-form-page__field">
-            <label for="username">Nombre de usuario *</label>
+            <label for="username">{{ 'user-form.field.username' | translate }} *</label>
             <input
               pInputText
               id="username"
@@ -45,7 +45,7 @@
           </div>
 
           <div class="user-form-page__field">
-            <label for="email">Email *</label>
+            <label for="email">{{ 'user-form.field.email' | translate }} *</label>
             <input
               pInputText
               id="email"
@@ -64,7 +64,7 @@
           </div>
 
           <div class="user-form-page__field">
-            <label for="first_name">Nombre *</label>
+            <label for="first_name">{{ 'user-form.field.first-name' | translate }} *</label>
             <input
               pInputText
               id="first_name"
@@ -82,7 +82,7 @@
           </div>
 
           <div class="user-form-page__field">
-            <label for="last_name">Apellido *</label>
+            <label for="last_name">{{ 'user-form.field.last-name' | translate }} *</label>
             <input
               pInputText
               id="last_name"
@@ -100,14 +100,14 @@
           </div>
 
           <div class="user-form-page__field">
-            <label for="role">Rol *</label>
+            <label for="role">{{ 'user-form.field.role' | translate }} *</label>
             <p-select
               inputId="role"
               formControlName="role"
-              [options]="roleOptions"
+              [options]="roleOptions()"
               optionLabel="label"
               optionValue="value"
-              placeholder="Selecciona un rol"
+              placeholder="-"
               styleClass="w-full"
               [attr.aria-invalid]="form.get('role')?.invalid && form.get('role')?.touched"
               aria-describedby="role-error"
@@ -120,10 +120,10 @@
           </div>
 
           <div class="user-form-page__field user-form-page__field--toggle">
-            <label for="active">Estado</label>
+            <label for="active">{{ 'user-form.field.active' | translate }}</label>
             <div class="user-form-page__toggle-row">
               <p-toggleswitch inputId="active" formControlName="active" />
-              <span>{{ form.get('active')?.value ? 'Activo' : 'Inactivo' }}</span>
+              <span>{{ form.get('active')?.value ? ('common.active-status' | translate) : ('common.inactive-status' | translate) }}</span>
             </div>
           </div>
 
@@ -132,14 +132,14 @@
         <div class="user-form-page__actions">
           <p-button
             type="button"
-            label="Cancelar"
+            [label]="'user-form.cancel' | translate"
             severity="secondary"
             [outlined]="true"
             (onClick)="goBack()"
           />
           <p-button
             type="submit"
-            [label]="isEditMode ? 'Guardar cambios' : 'Crear usuario'"
+            [label]="isEditMode ? ('user-form.submit-edit' | translate) : ('user-form.submit-create' | translate)"
             [loading]="store.isLoading()"
           />
         </div>

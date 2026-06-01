@@ -2,11 +2,11 @@
   <div class="user-detail__nav">
     <p-button
       icon="pi pi-arrow-left"
-      label="Volver"
+      [label]="'user-detail.back' | translate"
       severity="secondary"
       [text]="true"
       (onClick)="goBack()"
-      aria-label="Volver al listado"
+      [attr.aria-label]="'user-detail.back' | translate"
     />
   </div>
 
@@ -48,7 +48,7 @@
         <div class="user-detail__badges">
           <p-tag [value]="user.role" [severity]="roleSeverity(user.role)" />
           <p-tag
-            [value]="user.active ? 'Activo' : 'Inactivo'"
+            [value]="user.active ? ('common.active-status' | translate) : ('common.inactive-status' | translate)"
             [severity]="user.active ? 'success' : 'danger'"
           />
         </div>
@@ -56,37 +56,37 @@
 
       <dl class="user-detail__fields">
         <div class="user-detail__field">
-          <dt>Email</dt>
+          <dt>{{ 'user-detail.field.email' | translate }}</dt>
           <dd>{{ user.email }}</dd>
         </div>
         <div class="user-detail__field">
-          <dt>Rol</dt>
+          <dt>{{ 'user-detail.field.role' | translate }}</dt>
           <dd>{{ user.role }}</dd>
         </div>
         <div class="user-detail__field">
-          <dt>Creado</dt>
+          <dt>{{ 'user-detail.field.created' | translate }}</dt>
           <dd>{{ user.created_at | date: 'dd/MM/yyyy HH:mm' }}</dd>
         </div>
         <div class="user-detail__field">
-          <dt>Actualizado</dt>
+          <dt>{{ 'user-detail.field.updated' | translate }}</dt>
           <dd>{{ user.updated_at | date: 'dd/MM/yyyy HH:mm' }}</dd>
         </div>
       </dl>
 
       <div class="user-detail__actions">
         <p-button
-          label="Eliminar"
+          [label]="'user-detail.delete' | translate"
           icon="pi pi-trash"
           severity="danger"
           [outlined]="true"
           (onClick)="deleteUser()"
-          [attr.aria-label]="'Eliminar usuario ' + user.username"
+          [attr.aria-label]="('user-detail.delete' | translate) + ' ' + user.username"
         />
         <p-button
-          label="Editar usuario"
+          [label]="'user-detail.edit' | translate"
           icon="pi pi-pencil"
           (onClick)="editUser()"
-          [attr.aria-label]="'Editar usuario ' + user.username"
+          [attr.aria-label]="('user-detail.edit' | translate) + ' ' + user.username"
         />
       </div>
     </div>

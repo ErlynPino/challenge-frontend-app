@@ -1,11 +1,11 @@
 <div class="user-list">
   <div class="user-list__header">
-    <h1 class="user-list__title">Gestión de Usuarios</h1>
+    <h1 class="user-list__title">{{ 'user-list.title' | translate }}</h1>
     <p-button
-      label="Nuevo usuario"
+      [label]="'user-list.new-button' | translate"
       icon="pi pi-plus"
       (onClick)="navigateToNew()"
-      aria-label="Crear nuevo usuario"
+      [attr.aria-label]="'user-list.new-button' | translate"
     />
   </div>
 
@@ -18,29 +18,29 @@
         type="search"
         [(ngModel)]="searchValue"
         (ngModelChange)="onSearch($event)"
-        placeholder="Buscar usuario..."
-        aria-label="Buscar usuarios"
+        [placeholder]="'user-list.search-placeholder' | translate"
+        [attr.aria-label]="'user-list.search-label' | translate"
       />
     </p-iconfield>
 
     <p-select
-      [options]="roleOptions"
+      [options]="roleOptions()"
       [(ngModel)]="selectedRole"
       (ngModelChange)="onRoleChange($event)"
       optionLabel="label"
       optionValue="value"
-      placeholder="Filtrar por rol"
-      aria-label="Filtrar por rol"
+      [placeholder]="'user-list.filter-role' | translate"
+      [attr.aria-label]="'user-list.filter-role' | translate"
     />
 
     <p-select
-      [options]="activeOptions"
+      [options]="activeOptions()"
       [(ngModel)]="selectedActive"
       (ngModelChange)="onActiveChange($event)"
       optionLabel="label"
       optionValue="value"
-      placeholder="Filtrar por estado"
-      aria-label="Filtrar por estado"
+      [placeholder]="'user-list.filter-status' | translate"
+      [attr.aria-label]="'user-list.filter-status' | translate"
     />
   </div>
 
@@ -48,7 +48,7 @@
     <div class="user-list__error" role="alert" aria-live="assertive">
       <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
       <p>{{ store.error() }}</p>
-      <p-button label="Reintentar" severity="secondary" (onClick)="store.loadUsers()" />
+      <p-button [label]="'common.retry' | translate" severity="secondary" (onClick)="store.loadUsers()" />
     </div>
   }
 
@@ -69,12 +69,12 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th scope="col" abbr="Usuario">Usuario</th>
-        <th scope="col" abbr="Email" class="col-hide-mobile">Email</th>
-        <th scope="col" abbr="Nombre" class="col-hide-tablet">Nombre completo</th>
-        <th scope="col" abbr="Rol">Rol</th>
-        <th scope="col" abbr="Estado">Estado</th>
-        <th scope="col" abbr="Creado" class="col-hide-tablet">Creado</th>
+        <th scope="col" [attr.abbr]="'user-list.col.user' | translate">{{ 'user-list.col.user' | translate }}</th>
+        <th scope="col" [attr.abbr]="'user-list.col.email' | translate" class="col-hide-mobile">{{ 'user-list.col.email' | translate }}</th>
+        <th scope="col" [attr.abbr]="'user-list.col.name' | translate" class="col-hide-tablet">{{ 'user-list.col.name' | translate }}</th>
+        <th scope="col" [attr.abbr]="'user-list.col.role' | translate">{{ 'user-list.col.role' | translate }}</th>
+        <th scope="col" [attr.abbr]="'user-list.col.status' | translate">{{ 'user-list.col.status' | translate }}</th>
+        <th scope="col" [attr.abbr]="'user-list.col.created' | translate" class="col-hide-tablet">{{ 'user-list.col.created' | translate }}</th>
         <th scope="col" class="user-list__actions-col"><span class="sr-only">Acciones</span></th>
       </tr>
     </ng-template>
@@ -97,7 +97,7 @@
         </td>
         <td>
           <p-tag
-            [value]="user.active ? 'Activo' : 'Inactivo'"
+            [value]="user.active ? ('common.active-status' | translate) : ('common.inactive-status' | translate)"
             [severity]="user.active ? 'success' : 'danger'"
           />
         </td>
@@ -143,9 +143,9 @@
             @if (searchValue) {
               <p>No se encontraron usuarios para "<strong>{{ searchValue }}</strong>"</p>
             } @else {
-              <p>No hay usuarios registrados</p>
+              <p>{{ 'user-list.empty' | translate }}</p>
               <p-button
-                label="Crear primer usuario"
+                [label]="'user-list.create-first' | translate"
                 severity="secondary"
                 [outlined]="true"
                 (onClick)="navigateToNew()"
