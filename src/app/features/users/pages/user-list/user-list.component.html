@@ -1,1 +1,135 @@
-<p>user-list works</p>
+<div class="user-list">
+  <div class="user-list__header">
+    <h1 class="user-list__title">Gestión de Usuarios</h1>
+    <p-button
+      label="Nuevo usuario"
+      icon="pi pi-plus"
+      (onClick)="navigateToNew()"
+      aria-label="Crear nuevo usuario"
+    />
+  </div>
+
+  <div class="user-list__filters" role="search" aria-label="Filtros de búsqueda">
+    <p-iconfield class="user-list__search">
+      <p-inputicon Class="pi pi-search" />
+      <input
+        pInputText
+        id="user-search"
+        type="search"
+        [(ngModel)]="searchValue"
+        (ngModelChange)="onSearch($event)"
+        placeholder="Buscar usuario..."
+        aria-label="Buscar usuarios"
+      />
+    </p-iconfield>
+
+    <p-select
+      [options]="roleOptions"
+      [(ngModel)]="selectedRole"
+      (ngModelChange)="onRoleChange($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Filtrar por rol"
+      aria-label="Filtrar por rol"
+    />
+
+    <p-select
+      [options]="activeOptions"
+      [(ngModel)]="selectedActive"
+      (ngModelChange)="onActiveChange($event)"
+      optionLabel="label"
+      optionValue="value"
+      placeholder="Filtrar por estado"
+      aria-label="Filtrar por estado"
+    />
+  </div>
+
+  @if (store.error()) {
+    <div class="user-list__error" role="alert" aria-live="assertive">
+      <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+      <p>{{ store.error() }}</p>
+      <p-button label="Reintentar" severity="secondary" (onClick)="store.loadUsers()" />
+    </div>
+  }
+
+  <p-table
+    [value]="store.users()"
+    [loading]="store.isLoading()"
+    [lazy]="true"
+    [paginator]="true"
+    [rows]="store.pageSize()"
+    [totalRecords]="store.total()"
+    [first]="(store.page() - 1) * store.pageSize()"
+    (onLazyLoad)="onLazyLoad($event)"
+    [rowHover]="true"
+    dataKey="id"
+    Class="p-datatable-sm"
+    aria-label="Tabla de usuarios"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th scope="col">Usuario</th>
+        <th scope="col">Email</th>
+        <th scope="col">Nombre completo</th>
+        <th scope="col">Rol</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Creado</th>
+        <th scope="col" class="user-list__actions-col">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user>
+      <tr
+        class="user-list__row"
+        (click)="navigateToDetail(user.id)"
+        (keydown.enter)="navigateToDetail(user.id)"
+        tabindex="0"
+        [attr.aria-label]="'Ver detalle de ' + user.username"
+      >
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.first_name }} {{ user.last_name }}</td>
+        <td>
+          <p-tag [value]="user.role" [severity]="roleSeverity(user.role)" />
+        </td>
+        <td>
+          <p-tag
+            [value]="user.active ? 'Activo' : 'Inactivo'"
+            [severity]="user.active ? 'success' : 'danger'"
+          />
+        </td>
+        <td>{{ user.created_at | date: 'dd/MM/yyyy' }}</td>
+        <td class="user-list__actions-col">
+          <p-button
+            icon="pi pi-pencil"
+            severity="secondary"
+            [text]="true"
+            (onClick)="editUser(user.id, $event)"
+            [attr.aria-label]="'Editar ' + user.username"
+          />
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7">
+          <div class="user-list__empty">
+            <i class="pi pi-users" aria-hidden="true"></i>
+            @if (searchValue) {
+              <p>No se encontraron usuarios para "<strong>{{ searchValue }}</strong>"</p>
+            } @else {
+              <p>No hay usuarios registrados</p>
+              <p-button
+                label="Crear primer usuario"
+                severity="secondary"
+                [outlined]="true"
+                (onClick)="navigateToNew()"
+              />
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
