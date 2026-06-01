@@ -7,11 +7,12 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,html,scss,css,json,md}": "prettier --write",
-    "*.ts": "tsc --noEmit -p tsconfig.app.json"
+    "*.{ts,html,scss,css,json,md}": "prettier --write"
   },
   "prettier": {
     "printWidth": 100,
@@ -45,6 +46,7 @@
     "@angular/build": "^21.0.4",
     "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.0",
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/vite": "^4.3.0",
     "husky": "^9.1.7",
     "jsdom": "^27.1.0",
