@@ -1,1 +1,72 @@
-<p>user-detail works</p>
+<div class="user-detail">
+  <div class="user-detail__nav">
+    <p-button
+      icon="pi pi-arrow-left"
+      label="Volver"
+      severity="secondary"
+      [text]="true"
+      (onClick)="goBack()"
+      aria-label="Volver al listado"
+    />
+  </div>
+
+  @if (store.isLoading()) {
+    <div class="user-detail__loading" role="status" aria-live="polite">
+      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
+      <span>Cargando usuario...</span>
+    </div>
+  } @else if (store.error()) {
+    <div class="user-detail__error" role="alert">
+      <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+      <p>{{ store.error() }}</p>
+      <p-button label="Reintentar" severity="secondary" (onClick)="store.loadUserById(+id())" />
+    </div>
+  } @else if (store.selectedUser(); as user) {
+    <div class="user-detail__card">
+      <div class="user-detail__card-header">
+        <div class="user-detail__avatar" aria-hidden="true">
+          {{ user.first_name[0] }}{{ user.last_name[0] }}
+        </div>
+        <div>
+          <h1 class="user-detail__name">{{ user.first_name }} {{ user.last_name }}</h1>
+          <p class="user-detail__username">&#64;{{ user.username }}</p>
+        </div>
+        <div class="user-detail__badges">
+          <p-tag [value]="user.role" [severity]="roleSeverity(user.role)" />
+          <p-tag
+            [value]="user.active ? 'Activo' : 'Inactivo'"
+            [severity]="user.active ? 'success' : 'danger'"
+          />
+        </div>
+      </div>
+
+      <dl class="user-detail__fields">
+        <div class="user-detail__field">
+          <dt>Email</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div class="user-detail__field">
+          <dt>Rol</dt>
+          <dd>{{ user.role }}</dd>
+        </div>
+        <div class="user-detail__field">
+          <dt>Creado</dt>
+          <dd>{{ user.created_at | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        </div>
+        <div class="user-detail__field">
+          <dt>Actualizado</dt>
+          <dd>{{ user.updated_at | date: 'dd/MM/yyyy HH:mm' }}</dd>
+        </div>
+      </dl>
+
+      <div class="user-detail__actions">
+        <p-button
+          label="Editar usuario"
+          icon="pi pi-pencil"
+          (onClick)="editUser()"
+          [attr.aria-label]="'Editar usuario ' + user.username"
+        />
+      </div>
+    </div>
+  }
+</div>
