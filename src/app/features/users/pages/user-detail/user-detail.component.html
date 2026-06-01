@@ -61,6 +61,14 @@
 
       <div class="user-detail__actions">
         <p-button
+          label="Eliminar"
+          icon="pi pi-trash"
+          severity="danger"
+          [outlined]="true"
+          (onClick)="deleteUser()"
+          [attr.aria-label]="'Eliminar usuario ' + user.username"
+        />
+        <p-button
           label="Editar usuario"
           icon="pi pi-pencil"
           (onClick)="editUser()"

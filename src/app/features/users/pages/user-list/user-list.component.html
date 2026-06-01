@@ -107,6 +107,13 @@
             (onClick)="editUser(user.id, $event)"
             [attr.aria-label]="'Editar ' + user.username"
           />
+          <p-button
+            icon="pi pi-trash"
+            severity="danger"
+            [text]="true"
+            (onClick)="deleteUser(user.id, user.username, $event)"
+            [attr.aria-label]="'Eliminar ' + user.username"
+          />
         </td>
       </tr>
     </ng-template>

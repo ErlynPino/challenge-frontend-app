@@ -128,6 +128,8 @@ export class UserStore {
 
   deleteUser(id: number): Observable<void> {
     const snapshot = this._users();
+    this._isLoading.set(true);
+    this._error.set(null);
 
     this._users.update(users => users.filter(u => u.id !== id));
     this._total.update(t => t - 1);
@@ -137,8 +139,10 @@ export class UserStore {
       catchError(err => {
         this._users.set(snapshot);
         this._total.update(t => t + 1);
+        this._error.set('No se pudo eliminar el usuario.');
         return throwError(() => err);
       }),
+      finalize(() => this._isLoading.set(false)),
     );
   }
 

@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -11,6 +11,7 @@ import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { UserStore } from '../../store/user.store';
 import { UserRole } from '../../models/user.model';
@@ -35,6 +36,8 @@ export class UserListComponent implements OnInit {
   protected readonly store = inject(UserStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(MessageService);
+  private readonly confirm = inject(ConfirmationService);
   private readonly searchInput$ = new Subject<string>();
 
   protected searchValue = '';
@@ -89,6 +92,25 @@ export class UserListComponent implements OnInit {
   editUser(id: number, event: Event): void {
     event.stopPropagation();
     this.router.navigate(['/users', id, 'edit']);
+  }
+
+  deleteUser(id: number, username: string, event: Event): void {
+    event.stopPropagation();
+    this.confirm.confirm({
+      message: `¿Eliminar al usuario <strong>${username}</strong>? Esta acción no se puede deshacer.`,
+      header: 'Confirmar eliminación',
+      icon: 'pi pi-trash',
+      acceptLabel: 'Eliminar',
+      rejectLabel: 'Cancelar',
+      accept: async () => {
+        try {
+          await firstValueFrom(this.store.deleteUser(id));
+          this.toast.add({ severity: 'success', summary: 'Eliminado', detail: `Usuario ${username} eliminado.` });
+        } catch {
+          this.toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar el usuario.' });
+        }
+      },
+    });
   }
 
   roleSeverity(role: UserRole): 'success' | 'info' | 'secondary' {

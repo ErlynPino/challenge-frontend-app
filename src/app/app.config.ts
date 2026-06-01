@@ -5,6 +5,7 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { routes } from './app.routes';
 import { environment } from '../environments/environment';
 import { ENVIRONMENT } from './tokens/environment.token';
@@ -27,5 +28,7 @@ export const appConfig: ApplicationConfig = {
       ripple: true,
     }),
     { provide: ENVIRONMENT, useValue: environment },
+    MessageService,
+    ConfirmationService,
   ],
 };

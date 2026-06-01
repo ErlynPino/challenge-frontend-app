@@ -14,6 +14,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { MessageModule } from 'primeng/message';
+import { MessageService } from 'primeng/api';
 import { UserStore } from '../../store/user.store';
 import { UserRole } from '../../models/user.model';
 
@@ -45,6 +46,7 @@ export class UserFormComponent implements OnInit {
 
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly toast = inject(MessageService);
   protected readonly store = inject(UserStore);
 
   protected readonly VALID_ROLES: UserRole[] = ['admin', 'user', 'guest'];
@@ -112,12 +114,14 @@ export class UserFormComponent implements OnInit {
     try {
       if (this.isEditMode) {
         await firstValueFrom(this.store.updateUser(Number(this.id()), dto));
+        this.toast.add({ severity: 'success', summary: 'Guardado', detail: 'Usuario actualizado correctamente.' });
       } else {
         await firstValueFrom(this.store.createUser(dto));
+        this.toast.add({ severity: 'success', summary: 'Creado', detail: 'Usuario creado correctamente.' });
       }
       this.router.navigate(['/users']);
     } catch {
-      // el store ya setea _error — el template lo muestra
+      this.toast.add({ severity: 'error', summary: 'Error', detail: this.store.error() ?? 'Ocurrió un error inesperado.' });
     }
   }
 
