@@ -54,7 +54,7 @@ export class UserService {
         lastName: dto.last_name,
         role: dto.role,
       })
-      .pipe(map((raw) => ({ ...mapDummyJsonUser(raw), active: dto.active })));
+      .pipe(map((raw) => ({ ...mapDummyJsonUser(raw), role: dto.role, active: dto.active })));
   }
 
   updateUser(id: number, dto: UpdateUserDto): Observable<User> {
@@ -65,9 +65,13 @@ export class UserService {
     if (dto.last_name !== undefined) body['lastName'] = dto.last_name;
     if (dto.role !== undefined) body['role'] = dto.role;
 
-    return this.http
-      .put<DummyJsonUser>(`/users/${id}`, body)
-      .pipe(map((raw) => ({ ...mapDummyJsonUser(raw), active: dto.active ?? true })));
+    return this.http.put<DummyJsonUser>(`/users/${id}`, body).pipe(
+      map((raw) => ({
+        ...mapDummyJsonUser(raw),
+        ...(dto.role !== undefined && { role: dto.role }),
+        active: dto.active ?? true,
+      })),
+    );
   }
 
   deleteUser(id: number): Observable<{ id: number; isDeleted: boolean }> {
