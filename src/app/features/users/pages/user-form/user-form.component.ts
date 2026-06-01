@@ -137,6 +137,8 @@ export class UserFormComponent implements OnInit, CanComponentDeactivate {
           detail: 'Usuario creado correctamente.',
         });
       }
+      // Mark pristine so pendingChangesGuard does not block the post-submit navigation.
+      this.form.markAsPristine();
       this.router.navigate(['/users']);
     } catch {
       this.toast.add({
