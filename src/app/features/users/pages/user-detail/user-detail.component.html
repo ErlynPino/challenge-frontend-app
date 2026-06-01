@@ -11,9 +11,23 @@
   </div>
 
   @if (store.isLoading()) {
-    <div class="user-detail__loading" role="status" aria-live="polite">
-      <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-      <span>Cargando usuario...</span>
+    <div class="user-detail__card" aria-busy="true" role="status" aria-label="Cargando usuario">
+      <div class="user-detail__card-header">
+        <p-skeleton shape="circle" size="4.5rem" />
+        <div style="flex:1; display:flex; flex-direction:column; gap:.5rem;">
+          <p-skeleton width="12rem" height="1.5rem" />
+          <p-skeleton width="8rem" height="1rem" />
+        </div>
+        <p-skeleton width="4.5rem" height="1.5rem" borderRadius="1rem" />
+      </div>
+      <dl class="user-detail__fields">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="user-detail__field">
+            <p-skeleton width="5rem" height="1rem" />
+            <p-skeleton width="10rem" height="1rem" styleClass="mt-1" />
+          </div>
+        }
+      </dl>
     </div>
   } @else if (store.error()) {
     <div class="user-detail__error" role="alert">

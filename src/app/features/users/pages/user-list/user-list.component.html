@@ -121,6 +121,20 @@
       </tr>
     </ng-template>
 
+    <ng-template pTemplate="loadingbody">
+      @for (row of skeletonRows; track row) {
+        <tr>
+          <td><p-skeleton height="1.25rem" /></td>
+          <td class="col-hide-mobile"><p-skeleton height="1.25rem" /></td>
+          <td class="col-hide-tablet"><p-skeleton height="1.25rem" /></td>
+          <td><p-skeleton height="1.5rem" borderRadius="1rem" width="4.5rem" /></td>
+          <td><p-skeleton height="1.5rem" borderRadius="1rem" width="4.5rem" /></td>
+          <td class="col-hide-tablet"><p-skeleton height="1.25rem" width="6rem" /></td>
+          <td><p-skeleton height="2rem" width="5rem" /></td>
+        </tr>
+      }
+    </ng-template>
+
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="7">

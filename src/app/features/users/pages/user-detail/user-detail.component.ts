@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { SkeletonModule } from 'primeng/skeleton';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { UserStore } from '../../store/user.store';
@@ -11,7 +12,7 @@ import { UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-user-detail',
-  imports: [DatePipe, ButtonModule, TagModule],
+  imports: [DatePipe, ButtonModule, TagModule, SkeletonModule],
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss',
 })

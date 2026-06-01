@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TagModule } from 'primeng/tag';
+import { SkeletonModule } from 'primeng/skeleton';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -26,6 +27,7 @@ import { UserRole } from '../../models/user.model';
     InputTextModule,
     SelectModule,
     TagModule,
+    SkeletonModule,
     IconField,
     InputIcon,
   ],
@@ -43,6 +45,7 @@ export class UserListComponent implements OnInit {
   protected searchValue = '';
   protected selectedRole: UserRole | null = null;
   protected selectedActive: boolean | null = null;
+  protected readonly skeletonRows = [1, 2, 3, 4, 5];
 
   protected readonly roleOptions = [
     { label: 'Todos los roles', value: null },
