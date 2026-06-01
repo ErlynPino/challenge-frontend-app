@@ -20,24 +20,37 @@
         </li>
       </ul>
 
-      <button
-        class="app-nav__theme-toggle"
-        (click)="i18n.toggle()"
-        [attr.aria-label]="'lang.switch-label' | translate"
-        title="{{ 'lang.switch-label' | translate }}"
-      >
-        {{ 'lang.current' | translate }}
-      </button>
+      <div class="app-nav__controls">
+        <button
+          class="app-nav__lang-btn"
+          (click)="i18n.toggle()"
+          [attr.aria-label]="'lang.switch-label' | translate"
+          [title]="'lang.switch-label' | translate"
+        >
+          <i class="pi pi-globe" aria-hidden="true"></i>
+          <span>{{ 'lang.current' | translate }}</span>
+        </button>
 
-      <button
-        class="app-nav__theme-toggle"
-        (click)="theme.toggle()"
-        [attr.aria-label]="theme.isDark() ? ('nav.theme-light' | translate) : ('nav.theme-dark' | translate)"
-        [attr.aria-pressed]="theme.isDark()"
-        title="{{ theme.isDark() ? ('nav.theme-light' | translate) : ('nav.theme-dark' | translate) }}"
-      >
-        <i [class]="theme.isDark() ? 'pi pi-sun' : 'pi pi-moon'" aria-hidden="true"></i>
-      </button>
+        <button
+          class="app-nav__theme-btn"
+          (click)="theme.toggle()"
+          [class.app-nav__theme-btn--dark]="theme.isDark()"
+          [attr.aria-label]="
+            theme.isDark() ? ('nav.theme-light' | translate) : ('nav.theme-dark' | translate)
+          "
+          [attr.aria-pressed]="theme.isDark()"
+          [title]="
+            theme.isDark() ? ('nav.theme-light' | translate) : ('nav.theme-dark' | translate)
+          "
+        >
+          <i
+            class="pi"
+            [class.pi-moon]="!theme.isDark()"
+            [class.pi-sun]="theme.isDark()"
+            aria-hidden="true"
+          ></i>
+        </button>
+      </div>
     </nav>
   </header>
 
