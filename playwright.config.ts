@@ -18,11 +18,4 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  // Uncomment to start dev server automatically:
-  // webServer: {
-  //   command: 'npm start',
-  //   url: 'http://localhost:4200',
-  //   reuseExistingServer: true,
-  //   timeout: 120_000,
-  // },
 });

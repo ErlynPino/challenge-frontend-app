@@ -19,6 +19,7 @@ import { UserStore } from '../../store/user.store';
 import { UserRole } from '../../models/user.model';
 import { I18nService } from '../../../../core/i18n/i18n.service';
 import { TranslatePipe } from '../../../../core/i18n/translate.pipe';
+import { CanComponentDeactivate } from '../../../../core/guards/pending-changes.guard';
 
 function noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
   return control.value && /\s/.test(control.value) ? { noWhitespace: true } : null;
@@ -44,7 +45,7 @@ function roleValidator(validRoles: UserRole[]) {
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss',
 })
-export class UserFormComponent implements OnInit {
+export class UserFormComponent implements OnInit, CanComponentDeactivate {
   readonly id = input<string>();
 
   private readonly fb = inject(FormBuilder);
@@ -64,6 +65,10 @@ export class UserFormComponent implements OnInit {
 
   get isEditMode(): boolean {
     return !!this.id();
+  }
+
+  canDeactivate(): boolean {
+    return !this.form?.dirty;
   }
 
   ngOnInit(): void {
@@ -100,7 +105,8 @@ export class UserFormComponent implements OnInit {
     if (!ctrl || !ctrl.invalid || !ctrl.touched) return null;
 
     if (ctrl.hasError('required')) return 'Este campo es requerido';
-    if (ctrl.hasError('minlength')) return `Mínimo ${ctrl.getError('minlength').requiredLength} caracteres`;
+    if (ctrl.hasError('minlength'))
+      return `Mínimo ${ctrl.getError('minlength').requiredLength} caracteres`;
     if (ctrl.hasError('email')) return 'Formato de email inválido';
     if (ctrl.hasError('noWhitespace')) return 'No puede contener espacios';
     if (ctrl.hasError('invalidRole')) return 'Rol inválido';
@@ -118,14 +124,26 @@ export class UserFormComponent implements OnInit {
     try {
       if (this.isEditMode) {
         await firstValueFrom(this.store.updateUser(Number(this.id()), dto));
-        this.toast.add({ severity: 'success', summary: 'Guardado', detail: 'Usuario actualizado correctamente.' });
+        this.toast.add({
+          severity: 'success',
+          summary: 'Guardado',
+          detail: 'Usuario actualizado correctamente.',
+        });
       } else {
         await firstValueFrom(this.store.createUser(dto));
-        this.toast.add({ severity: 'success', summary: 'Creado', detail: 'Usuario creado correctamente.' });
+        this.toast.add({
+          severity: 'success',
+          summary: 'Creado',
+          detail: 'Usuario creado correctamente.',
+        });
       }
       this.router.navigate(['/users']);
     } catch {
-      this.toast.add({ severity: 'error', summary: 'Error', detail: this.store.error() ?? 'Ocurrió un error inesperado.' });
+      this.toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: this.store.error() ?? 'Ocurrió un error inesperado.',
+      });
     }
   }
 
