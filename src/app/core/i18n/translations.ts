@@ -2,14 +2,12 @@ export type Lang = 'es' | 'en';
 
 export const translations = {
   es: {
-    // Shell
     'nav.users': 'Usuarios',
     'nav.theme-dark': 'Activar modo oscuro',
     'nav.theme-light': 'Activar modo claro',
     'footer.copyright': 'User Management © 2026',
     'lang.current': 'ES',
     'lang.switch-label': 'Cambiar a inglés',
-    // UserList
     'user-list.title': 'Gestión de Usuarios',
     'user-list.new-button': 'Nuevo usuario',
     'user-list.search-placeholder': 'Buscar usuario...',
@@ -25,7 +23,6 @@ export const translations = {
     'user-list.empty': 'No hay usuarios registrados',
     'user-list.empty-search': 'No se encontraron usuarios para',
     'user-list.create-first': 'Crear primer usuario',
-    // UserDetail
     'user-detail.back': 'Volver',
     'user-detail.edit': 'Editar usuario',
     'user-detail.delete': 'Eliminar',
@@ -33,7 +30,6 @@ export const translations = {
     'user-detail.field.role': 'Rol',
     'user-detail.field.created': 'Creado',
     'user-detail.field.updated': 'Actualizado',
-    // UserForm
     'user-form.title-create': 'Nuevo usuario',
     'user-form.title-edit': 'Editar usuario',
     'user-form.field.username': 'Nombre de usuario',
@@ -45,7 +41,6 @@ export const translations = {
     'user-form.submit-create': 'Crear usuario',
     'user-form.submit-edit': 'Guardar cambios',
     'user-form.cancel': 'Cancelar',
-    // Common
     'common.retry': 'Reintentar',
     'common.all-roles': 'Todos los roles',
     'common.all': 'Todos',
@@ -58,14 +53,12 @@ export const translations = {
     'common.inactive-status': 'Inactivo',
   },
   en: {
-    // Shell
     'nav.users': 'Users',
     'nav.theme-dark': 'Enable dark mode',
     'nav.theme-light': 'Enable light mode',
     'footer.copyright': 'User Management © 2026',
     'lang.current': 'EN',
     'lang.switch-label': 'Switch to Spanish',
-    // UserList
     'user-list.title': 'User Management',
     'user-list.new-button': 'New user',
     'user-list.search-placeholder': 'Search user...',
@@ -81,7 +74,6 @@ export const translations = {
     'user-list.empty': 'No users registered',
     'user-list.empty-search': 'No users found for',
     'user-list.create-first': 'Create first user',
-    // UserDetail
     'user-detail.back': 'Back',
     'user-detail.edit': 'Edit user',
     'user-detail.delete': 'Delete',
@@ -89,7 +81,6 @@ export const translations = {
     'user-detail.field.role': 'Role',
     'user-detail.field.created': 'Created',
     'user-detail.field.updated': 'Updated',
-    // UserForm
     'user-form.title-create': 'New user',
     'user-form.title-edit': 'Edit user',
     'user-form.field.username': 'Username',
@@ -101,7 +92,6 @@ export const translations = {
     'user-form.submit-create': 'Create user',
     'user-form.submit-edit': 'Save changes',
     'user-form.cancel': 'Cancel',
-    // Common
     'common.retry': 'Retry',
     'common.all-roles': 'All roles',
     'common.all': 'All',
