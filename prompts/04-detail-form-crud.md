@@ -1,31 +1,92 @@
-﻿# Prompt 04 — UserDetail, UserForm & CRUD Actions
+﻿# Prompt 04 — UserDetail, UserForm y CRUD completo
 
-## Context
-Need a read-only detail page and a shared create/edit reactive form.
+## Objetivo de la sesión
 
-## Prompt
+Implementar la vista de detalle (solo lectura) y el formulario compartido para crear/editar usuarios con validaciones custom y feedback al usuario.
 
-`````nImplement UserDetail and UserForm for the User Management SPA.
+---
 
-UserDetailComponent (/users/:id):
-- input.required<string>() bound to route :id via withComponentInputBinding
-- Loads user via store.loadUserById(+id()) on effect (use computed or manual call)
-- Shows loading skeleton, error message or user card depending on store signals
-- User card: avatar with initials, dl grid with all fields
-- Actions: Delete (confirm dialog + toast + navigate /users) and Edit (navigate /:id/edit)
+## Prompt inicial — UserDetail
 
-UserFormComponent (/users/new and /users/:id/edit):
-- input<string>() optional id — presence determines create vs edit mode
-- ReactiveForm: first_name, last_name, username, email (required, email validator), role (p-select), active (p-toggleswitch)
-- Custom validators: noWhitespaceValidator (trims and checks not empty), roleValidator(allowedRoles[])
-- ngDoCheck patches form values once selectedUser signal resolves (avoids ExpressionChanged errors)
-- onSubmit uses firstValueFrom(store.createUser/updateUser()) + toast success/error
-- All inputs have aria-required, aria-invalid, aria-describedby. Errors have role=alert
+```
+Necesito UserDetailComponent en /users/:id.
+El :id llega como input() string gracias a withComponentInputBinding.
 
-Constraints: no template-driven forms, no NgModules, PrimeNG components only for UI inputs.
-`````n
-## Key Decisions Made
-- Shared component for create + edit reduces duplication; route param presence is the discriminator
-- 
-gDoCheck for patching avoids timing issues with signal-based async data vs form initialization
-- irstValueFrom() converts Observable store actions to Promise for async/await in submit handler
+Requerimientos:
+- Llamar store.loadUserById(+id()) al inicializar
+- Mostrar skeleton mientras carga (no spinner)
+- Mostrar mensaje de error si falla
+- Card con: avatar con iniciales del nombre, y todos los campos en un <dl>
+- Botones: Editar (navega a /:id/edit) y Eliminar (confirm dialog + toast + vuelve a /users)
+
+¿Cómo manejo la inicialización cuando id() es un signal input?
+¿Debo usar effect() o ngOnInit?
+```
+
+---
+
+## Prompt de seguimiento — UserForm
+
+```
+Ahora UserFormComponent, compartido para /users/new y /users/:id/edit.
+El id llega como input() opcional — si existe es modo edición.
+
+Formulario reactivo con:
+- username: required, minLength(3), sin espacios (custom validator)
+- email: required, email
+- first_name, last_name: required
+- role: required, debe ser uno de ['admin','user','guest'] (custom validator)
+- active: boolean con p-toggleswitch
+
+En modo edición: cargar el usuario y parchear el formulario.
+Al hacer submit: store.createUser() o store.updateUser() según el modo.
+Mostrar toast de éxito/error y navegar a /users si funciona.
+
+Todos los inputs deben tener aria-required, aria-invalid, aria-describedby.
+Los mensajes de error deben tener role=alert.
+```
+
+---
+
+## Prompt de ajuste — bug en el patch del formulario
+
+```
+El formulario en modo edición no se llena. El problema es que store.loadUserById()
+es async y el formulario ya está inicializado cuando llegan los datos.
+La IA proponía usar ngDoCheck para detectar cuando selectedUser() ya tiene valor
+y parchear el form si está pristine. ¿Es la mejor opción o hay algo más limpio?
+```
+
+_La IA reconoció que `effect()` sería más idiomático con Signals, pero en ese momento el proyecto ya usaba `ngDoCheck` y funcionaba. Acepté el trade-off y lo documenté como deuda técnica._
+
+---
+
+## Prompt de ajuste — bug con el guard de cambios pendientes
+
+```
+Agregué un pendingChangesGuard que bloquea navegación si el form tiene dirty=true.
+El problema: después de hacer submit exitoso, el router.navigate() también dispara el guard
+y aparece el confirm() aunque el usuario guardó correctamente.
+¿Cómo evito eso sin eliminar el guard?
+```
+
+_La IA sugirió `this.form.markAsPristine()` antes del `navigate()`. Simple y correcto. Lo apliqué directamente._
+
+---
+
+## Qué acepté
+
+- Los custom validators como funciones puras fuera de la clase — más testeable que como métodos del componente
+- `firstValueFrom()` para convertir el Observable del store a Promise dentro del `async onSubmit()` — no lo había usado antes en este contexto
+- El avatar con iniciales calculado en el template: `user.first_name[0] + user.last_name[0]`
+
+## Qué descarté
+
+- Un `FormArray` para roles múltiples que la IA propuso — el schema solo admite un rol, eso era sobreingenieria
+- Un `ReplaySubject` para esperar los datos del usuario antes de inicializar el form — complicó más de lo que resolvía
+- El uso de `[(ngModel)]` en el toggleswitch que apareció en una respuesta — el form es completamente reactivo, no mezclo
+
+## Qué modifiqué
+
+- Los mensajes de error del `fieldError()` estaban hardcodeados en inglés. Los cambié a español y después al agregar i18n los uniformé con el `TranslatePipe`
+- La condición del `ngDoCheck` la refiné: la IA usaba `!this.form.get('email')?.value` como flag, yo agregué `this.form.pristine` para no parchear si el usuario ya editó algo

@@ -1,43 +1,72 @@
-﻿# Prompt 02 — Data Layer: Model, Service & Signals Store
+﻿# Prompt 02 — Data Layer: Modelo, Servicio y Signals Store
 
-## Context
-DummyJSON API selected as backend. Need typed interfaces, a mapper, HTTP service and a reactive Signals store with optimistic updates.
+## Objetivo de la sesión
 
-## Prompt
+Definir los tipos TypeScript, el mapper de DummyJSON, el servicio HTTP y el store reactivo. Quería tener claro el contrato de datos antes de tocar ningún componente.
+
+---
+
+## Prompt inicial
 
 ```
-Create the complete data layer for a User Management feature consuming DummyJSON (/users endpoints).
+Voy a consumir DummyJSON (/users). El problema es que su schema usa firstName/lastName
+y el challenge pide first_name/last_name. También le faltan created_at y active.
 
-1. TypeScript interfaces:
-   - User { id, first_name, last_name, username, email, role: UserRole, active, created_at }
-   - CreateUserDto, UpdateUserDto (Partial of User fields)
-   - DummyJsonUser (raw API shape with firstName/lastName)
-   - UserListParams { page, pageSize, search?, roleFilter?, activeFilter? }
-   - UserListResponse { users: User[], total: number }
+Necesito:
+1. Interfaces TypeScript: User (schema del challenge), DummyJsonUser (raw API), DTOs para create/update
+2. Una función mapDummyJsonUser() que normalice el schema
+3. UserService con HttpClient para todos los endpoints CRUD
 
-2. mapDummyJsonUser(raw: DummyJsonUser): User
-   - firstName -> first_name, lastName -> last_name
-   - Normalize role to 'admin'|'user'|'guest', fallback 'user'
-   - Derive created_at from id (simulate a date)
-   - active defaults to true
-
-3. UserService (injectable):
-   - getUsers(params): hits /users or /users/search?q= depending on search param
-   - getUserById(id), createUser(dto) -> POST /users/add, updateUser(id,dto) -> PUT, deleteUser(id) -> DELETE
-   - All return typed Observables
-
-4. UserStore (service-based Signals store):
-   - Private WritableSignal for each piece of state, public .asReadonly() exposed
-   - computed() signals: users() (client-side filtered by roleFilter/activeFilter), totalPages(), isEmpty()
-   - Actions: loadUsers(), loadUserById() (cache-first), createUser(), updateUser(), deleteUser()
-   - deleteUser and updateUser must be optimistic: mutate state immediately, rollback on error
-   - All mutating actions return Observable<void> and manage isLoading/error with finalize()
-
-Constraints: no NgRx, no zone.js, inject() only, no constructor injection.
+Por ahora solo eso, el store lo hago en el siguiente paso.
 ```
 
-## Key Decisions Made
-- Signals store as a service avoids NgRx boilerplate while keeping reactive state
-- Optimistic updates give instant feedback; snapshot captured before mutation enables rollback
-- `finalize()` in RxJS pipe guarantees `isLoading = false` even on error, no duplicate cleanup code
-- Cache-first `loadUserById` avoids redundant HTTP calls when navigating list → detail
+---
+
+## Prompt de seguimiento — Store
+
+```
+Ahora el store. Quiero service-based con Angular Signals, no NgRx.
+Tengo clara la estructura: WritableSignal privados, asReadonly() público.
+
+Necesito:
+- Estado: users, selectedUser, isLoading, error, page, pageSize, search, roleFilter, activeFilter
+- computed(): users filtrado, totalPages, isEmpty
+- Acciones: loadUsers, loadUserById (cache-first si el user ya está en el array),
+  createUser, updateUser, deleteUser
+- updateUser y deleteUser con optimistic update + rollback en error
+- Las acciones mutantes deben devolver Observable<void> para poder hacer firstValueFrom() en el componente
+
+¿Cómo manejarías el isLoading con finalize() para garantizar que siempre se resetea?
+```
+
+_Le pregunté explícitamente sobre finalize() porque quería confirmar que sabía que el error no aborta finalize — es un detalle que muchos juniors no conocen._
+
+---
+
+## Prompt de ajuste
+
+```
+El mapper que generaste usa new Date(2024, raw.id % 12, raw.id % 28) para created_at.
+Eso da fechas inválidas cuando id % 28 === 0 (día 0 no existe).
+Cambiá la lógica para que sea más robusta.
+```
+
+---
+
+## Qué acepté
+
+- El patrón de `asReadonly()` en los signals públicos — no lo había aplicado antes de forma sistemática
+- El uso de `finalize()` al final del pipe en lugar de `catchError` + `tap` duplicado
+- La separación entre `CreateUserDto` y `UpdateUserDto` como `Partial<CreateUserDto>` — simple y correcto
+- Cache-first en `loadUserById`: si el user ya está en `_users`, no hace request HTTP
+
+## Qué descartué
+
+- La IA propuso NgRx Signals como alternativa — lo rechacé, el dominio es simple y no justifica la dependencia
+- Propuso `activeFilter` como parte de la query HTTP — DummyJSON no tiene ese endpoint, lo mantuve client-side
+- Un `BehaviorSubject` wrapper que propuso como alternativa al Signal store — ya domino Signals y es más moderno
+
+## Qué modifiqué
+
+- La función mapper: el fallback de `role` a `'user'` cuando DummyJSON devuelve algo inesperado, lo añadí yo — la IA no lo incluyó
+- El `createUser` en el store: la IA guardaba el resultado directo del API en `_users`. El problema es que DummyJSON no persiste el POST, entonces al recargar desaparece. Cambié la lógica para guardar en `_localUsers` separado que `loadUsers()` no toca

@@ -1,25 +1,67 @@
-﻿# Prompt 01 — Project Setup & Configuration
+﻿# Prompt 01 — Project Setup & Configuración inicial
 
-## Context
-Angular 21 workspace generated with Angular CLI. Need to wire Vitest, Tailwind CSS 4, PrimeNG 21, and a clean architecture before writing any feature code.
+## Objetivo de la sesión
 
-## Prompt
+Tener la base del proyecto lista antes de escribir una línea de feature code: Vitest en lugar de Karma, Tailwind CSS 4, PrimeNG 21 con tema Aura, y la arquitectura de inyección de dependencias limpia.
+
+---
+
+## Prompt inicial
 
 ```
-Act as a senior Angular tech lead. I have a freshly generated Angular 21 workspace.
+Tengo un workspace Angular 21 recién generado con Angular CLI.
+Necesito configurar:
+- Vitest en lugar de Karma/Jasmine (builder @angular/build:unit-test)
+- Tailwind CSS 4 vía @tailwindcss/vite
+- PrimeNG 21 con tema Aura
+- Un mecanismo de configuración para la API URL que no dependa de imports de filesystem
 
-Configure the following:
-1. Replace Karma/Jasmine with Vitest using the @angular/build:unit-test builder. Update angular.json and tsconfig.spec.json accordingly. Add "types": ["vitest/globals"] so describe/it/expect are available without imports.
-2. Wire Tailwind CSS 4 via @tailwindcss/vite plugin in angular.json vite plugins. Add @layer tailwind-base, primeng, app to styles.scss.
-3. Add PrimeNG 21 with Aura theme. Configure providePrimeNG in app.config.ts with darkModeSelector: false and cssLayer ordering.
-4. Create an ENVIRONMENT InjectionToken (not a filesystem import) with { production, apiUrl } shape. Provide it in app.config.ts.
-5. Create a LoggerService that silences console in production, always logs errors.
-6. Create a functional apiInterceptor that prepends the base URL from ENVIRONMENT and logs HTTP errors via LoggerService.
-
-Constraints: standalone components only, no NgModules, no zone.js assumptions. Keep code clean with no excessive comments.
+¿Cuál sería el orden de configuración y qué archivos debo tocar?
 ```
 
-## Key Decisions Made
-- `InjectionToken<EnvironmentConfig>` over direct environment file import — decouples services from filesystem path
-- `@layer tailwind-base, primeng, app` order prevents PrimeNG styles from being overridden by Tailwind reset
-- Vitest `globals: true` in tsconfig avoids `import { describe } from 'vitest'` boilerplate in every spec
+_El primer prompt lo hice abierto a propósito — quería ver qué approach proponía antes de condicionarlo._
+
+---
+
+## Prompt de seguimiento (después de revisar la respuesta)
+
+```
+Bien. Para el tema del environment, la IA propuso importar environment.ts directamente
+en los servicios. No quiero eso — si cambio la ruta del archivo se rompen todos los imports.
+Usá un InjectionToken<EnvironmentConfig> con shape { production: boolean, apiUrl: string }.
+Proveerlo en app.config.ts con useValue: environment.
+
+También necesito:
+- LoggerService que en producción solo loguee errors (log/warn silenciados)
+- apiInterceptor funcional (no clase) que prepend la baseUrl del token y loguee HTTP errors
+
+Constraints: solo standalone components, sin NgModules, sin asumir zone.js.
+```
+
+---
+
+## Prompt de ajuste (tercer round)
+
+```
+El interceptor que generaste usa constructor injection en una clase. Cámbialo
+a una función HttpInterceptorFn que use inject(). Más limpio con Angular moderno.
+```
+
+---
+
+## Qué acepté
+
+- La estructura de `tsconfig.spec.json` con `"types": ["vitest/globals"]` — me ahorró investigar la config exacta
+- La configuración de `@layer tailwind-base, primeng, app` en `styles.scss` — la IA explicó bien por qué el orden importa para que PrimeNG no pise el reset de Tailwind
+- El `providePrimeNG` con `cssLayer` — yo no conocía ese parámetro en PrimeNG 21
+
+## Qué descartué
+
+- El import directo de `environment.ts` en los servicios que propuso en el primer intento — es un acoplamiento innecesario
+- Un `APP_INITIALIZER` que propuso para cargar configuración — sobreingeniería para este caso
+- La clase `ApiInterceptor implements HttpInterceptor` — ya no es el patrón moderno en Angular 17+
+
+## Qué modifiqué
+
+- El `LoggerService` original no inyectaba `ENVIRONMENT`, usaba `isDevMode()`. Lo cambié para que dependa del token, más testeable
+- El `apiInterceptor` no manejaba el caso donde la URL ya sea absoluta (empieza con `http`). Lo añadí: `if (!req.url.startsWith('http'))`
