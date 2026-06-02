@@ -23,6 +23,8 @@ Stack: **Angular 21 · PrimeNG 21 · Tailwind CSS 4 · Vitest 4**.
 
 ## Features
 
+### Core
+
 - **User list** with server-side pagination, debounced search, and role/status filters
 - **User detail** view with structured data display and avatar initials
 - **Create / Edit** form with reactive validation (custom validators, aria attributes)
@@ -31,7 +33,16 @@ Stack: **Angular 21 · PrimeNG 21 · Tailwind CSS 4 · Vitest 4**.
 - **Confirm dialog** before destructive actions
 - **WCAG 2.1 AA** accessible: skip link, `aria-busy`, `aria-live`, keyboard nav, focus-visible
 - **Responsive** layout — columns hidden progressively on tablet/mobile
+- **Route guards**: `numericIdGuard` (validates `:id` is a positive integer), `pendingChangesGuard` (blocks navigation when form has unsaved changes)
 - **30 unit tests** across services, store, validators and components
+
+### Bonus
+
+- **Dark mode** — toggle in header, persisted in `localStorage`, respects `prefers-color-scheme`
+- **i18n EN/ES** — language toggle, signal-based `I18nService` + `TranslatePipe`, persisted in `localStorage`
+- **Skeleton loaders** — table rows animated while data loads (no spinner)
+- **Husky + lint-staged** — pre-commit hook runs Prettier on all staged files
+- **Playwright E2E** — smoke tests for shell, user list, and navigation flows
 
 ---
 
@@ -81,6 +92,7 @@ npm start
 | `npm start`     | Start dev server (`ng serve`) with live reload |
 | `npm run build` | Production build — output in `dist/`           |
 | `npm test`      | Run all unit tests once (no watch)             |
+| `npm run e2e`   | Run Playwright E2E tests (requires dev server) |
 
 ---
 
