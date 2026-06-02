@@ -7,17 +7,39 @@ Stack: **Angular 21 · PrimeNG 21 · Tailwind CSS 4 · Vitest 4**.
 
 ## Screenshots
 
-|                        User List (dark)                        |                        User List (light)                         |
-| :------------------------------------------------------------: | :--------------------------------------------------------------: |
-| ![User list dark mode](docs/screenshots/01-user-list-dark.png) | ![User list light mode](docs/screenshots/02-user-list-light.png) |
+### Desktop (1920×1080)
 
-|                     User Detail                     |                    User Form — Create                    |
-| :-------------------------------------------------: | :------------------------------------------------------: |
-| ![User detail](docs/screenshots/03-user-detail.png) | ![Create user](docs/screenshots/04-user-form-create.png) |
+|                         User List — Dark                          |                          User List — Light                          |
+| :---------------------------------------------------------------: | :-----------------------------------------------------------------: |
+| ![User list dark](docs/screenshots/01-desktop-dark-user-list.png) | ![User list light](docs/screenshots/02-desktop-light-user-list.png) |
 
-|                   User Form — Edit                   |
-| :--------------------------------------------------: |
-| ![Edit user](docs/screenshots/05-user-form-edit.png) |
+|                            User Detail                            |                           User Form — Create                           |
+| :---------------------------------------------------------------: | :--------------------------------------------------------------------: |
+| ![User detail](docs/screenshots/03-desktop-light-user-detail.png) | ![Create user](docs/screenshots/04-desktop-light-user-form-create.png) |
+
+|                          User Form — Edit                          |
+| :----------------------------------------------------------------: |
+| ![Edit user](docs/screenshots/05-desktop-light-user-form-edit.png) |
+
+### Tablet (768×1024)
+
+|                       User List — Dark                        |                        User List — Light                        |
+| :-----------------------------------------------------------: | :-------------------------------------------------------------: |
+| ![Tablet dark](docs/screenshots/06-tablet-dark-user-list.png) | ![Tablet light](docs/screenshots/07-tablet-light-user-list.png) |
+
+|                            User Detail                             |                           User Form                            |
+| :----------------------------------------------------------------: | :------------------------------------------------------------: |
+| ![Tablet detail](docs/screenshots/08-tablet-light-user-detail.png) | ![Tablet form](docs/screenshots/09-tablet-light-user-form.png) |
+
+### Mobile (390×844)
+
+|                       User List — Dark                        |                        User List — Light                        |
+| :-----------------------------------------------------------: | :-------------------------------------------------------------: |
+| ![Mobile dark](docs/screenshots/10-mobile-dark-user-list.png) | ![Mobile light](docs/screenshots/11-mobile-light-user-list.png) |
+
+|                            User Detail                             |                           User Form                            |
+| :----------------------------------------------------------------: | :------------------------------------------------------------: |
+| ![Mobile detail](docs/screenshots/12-mobile-light-user-detail.png) | ![Mobile form](docs/screenshots/13-mobile-light-user-form.png) |
 
 ---
 
