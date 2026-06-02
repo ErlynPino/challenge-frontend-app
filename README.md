@@ -5,6 +5,22 @@ Stack: **Angular 21 · PrimeNG 21 · Tailwind CSS 4 · Vitest 4**.
 
 ---
 
+## Screenshots
+
+|                        User List (dark)                        |                        User List (light)                         |
+| :------------------------------------------------------------: | :--------------------------------------------------------------: |
+| ![User list dark mode](docs/screenshots/01-user-list-dark.png) | ![User list light mode](docs/screenshots/02-user-list-light.png) |
+
+|                     User Detail                     |                    User Form — Create                    |
+| :-------------------------------------------------: | :------------------------------------------------------: |
+| ![User detail](docs/screenshots/03-user-detail.png) | ![Create user](docs/screenshots/04-user-form-create.png) |
+
+|                   User Form — Edit                   |
+| :--------------------------------------------------: |
+| ![Edit user](docs/screenshots/05-user-form-edit.png) |
+
+---
+
 ## Features
 
 - **User list** with server-side pagination, debounced search, and role/status filters
@@ -21,15 +37,15 @@ Stack: **Angular 21 · PrimeNG 21 · Tailwind CSS 4 · Vitest 4**.
 
 ## Tech Stack
 
-| Layer | Technology | Version |
-|---|---|---|
-| Framework | Angular (standalone components) | 21 |
-| UI library | PrimeNG + Aura theme | 21 |
-| Styling | Tailwind CSS 4 (Vite plugin) | 4.3 |
-| State | Angular Signals Store (service-based) | — |
-| HTTP | Angular HttpClient + functional interceptor | — |
-| Testing | Vitest + @angular/build:unit-test | 4 |
-| API | DummyJSON (public REST mock) | — |
+| Layer      | Technology                                  | Version |
+| ---------- | ------------------------------------------- | ------- |
+| Framework  | Angular (standalone components)             | 21      |
+| UI library | PrimeNG + Aura theme                        | 21      |
+| Styling    | Tailwind CSS 4 (Vite plugin)                | 4.3     |
+| State      | Angular Signals Store (service-based)       | —       |
+| HTTP       | Angular HttpClient + functional interceptor | —       |
+| Testing    | Vitest + @angular/build:unit-test           | 4       |
+| API        | DummyJSON (public REST mock)                | —       |
 
 ---
 
@@ -60,11 +76,11 @@ npm start
 
 ## Available Scripts
 
-| Command | Description |
-|---|---|
-| `npm start` | Start dev server (`ng serve`) with live reload |
-| `npm run build` | Production build — output in `dist/` |
-| `npm test` | Run all unit tests once (no watch) |
+| Command         | Description                                    |
+| --------------- | ---------------------------------------------- |
+| `npm start`     | Start dev server (`ng serve`) with live reload |
+| `npm run build` | Production build — output in `dist/`           |
+| `npm test`      | Run all unit tests once (no watch)             |
 
 ---
 
@@ -112,15 +128,19 @@ src/
 ## Architecture Decisions
 
 ### Signals Store (no NgRx)
+
 A service-based Signals store was chosen over NgRx to keep boilerplate minimal while still delivering reactive, computed state without change-detection pressure.
 
 ### Optimistic Updates
+
 `deleteUser` and `updateUser` mutate local state immediately and roll back on API error — the user sees instant feedback with no spinner latency.
 
 ### Functional Interceptor
+
 A single `apiInterceptor` centralises base-URL prepending and error logging, keeping services clean of environment imports.
 
 ### Standalone Components + Lazy Routes
+
 Every feature chunk is lazy-loaded via `loadComponent` / `loadChildren`, giving fast initial load with code-split bundles.
 
 ---
@@ -133,16 +153,16 @@ npm test
 
 Output should show **8 test suites · 30 tests · 0 failures**.
 
-| Suite | Tests |
-|---|---|
-| LoggerService | 5 |
-| UserService (HTTP) | 6 |
-| UserStore (Signals) | 6 |
-| Form validators | 5 |
-| DummyJSON mapper | 2 |
-| ShellComponent | 2 |
-| UserListComponent | 1 |
-| UserDetailComponent | 1 |
+| Suite               | Tests |
+| ------------------- | ----- |
+| LoggerService       | 5     |
+| UserService (HTTP)  | 6     |
+| UserStore (Signals) | 6     |
+| Form validators     | 5     |
+| DummyJSON mapper    | 2     |
+| ShellComponent      | 2     |
+| UserListComponent   | 1     |
+| UserDetailComponent | 1     |
 
 ---
 
